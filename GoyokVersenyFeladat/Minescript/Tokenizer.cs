@@ -1,10 +1,11 @@
-﻿using System;
+﻿using GoyokVersenyFeladat.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GoyokVersenyFeladat.Models
+namespace GoyokVersenyFeladat.Minescript
 {
     internal class Tokenizer
     {
