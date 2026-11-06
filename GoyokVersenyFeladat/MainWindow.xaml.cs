@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GoyokVersenyFeladat.Minescript;
 
 namespace GoyokVersenyFeladat
 {
@@ -16,9 +17,11 @@ namespace GoyokVersenyFeladat
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static InputReader inpReader = new();
         public MainWindow()
         {
             InitializeComponent();
+            inpReader.ReadInput("pelda.txt");
         }
     }
 }
