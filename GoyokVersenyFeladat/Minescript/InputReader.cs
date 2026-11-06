@@ -11,7 +11,7 @@ namespace GoyokVersenyFeladat.Minescript
 {
     internal class InputReader
     {
-        public void ReadInput(string inputFilePath)
+        public (MapData mapdata, string[] script) ReadInput(string inputFilePath)
         {
             string[] sorok = File.ReadAllLines(inputFilePath).ToArray();
             int height = Convert.ToInt32(sorok[0].Split(" ")[0]);
@@ -37,6 +37,7 @@ namespace GoyokVersenyFeladat.Minescript
                 Width = width,
                 Rows = map
             };
+            return (mapData, minescript);
         }   
     }
 }

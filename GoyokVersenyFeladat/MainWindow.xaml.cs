@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using GoyokVersenyFeladat.Minescript;
+using GoyokVersenyFeladat.Models;
+using System.Reflection.PortableExecutable;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using GoyokVersenyFeladat.Minescript;
 
 namespace GoyokVersenyFeladat
 {
@@ -21,7 +23,15 @@ namespace GoyokVersenyFeladat
         public MainWindow()
         {
             InitializeComponent();
-            inpReader.ReadInput("pelda.txt");
+            var (mapData, scriptLines) = inpReader.ReadInput("pelda.txt");
+            Tokenizer tokenizer = new Tokenizer();
+            List<ProgramLine> parsedLines = tokenizer.Tokenize(scriptLines);
+            if (parsedLines.Count > 0)
+            {
+                var firstLine = parsedLines[0];
+                MessageBox.Show($"1. sor tokenjei ({firstLine.Tokens.Count} db, behúzás: {firstLine.IndentLevel}):\n" +
+                                string.Join("\n", firstLine.Tokens.Select(t => $"{t.Type}: {t.Value}")));
+            }
         }
     }
 }
