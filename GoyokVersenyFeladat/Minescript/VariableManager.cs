@@ -70,6 +70,12 @@ namespace GoyokVersenyFeladat.Minescript
             }
         }
 
+        /// <summary>
+        /// Retrieves a variable by its name.
+        /// </summary>
+        /// <param name="name">The name of the variable to retrieve. This value cannot be <see langword="null"/> or empty.</param>
+        /// <returns>The <see cref="Variable"/> associated with the specified name.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if a variable with the specified <paramref name="name"/> does not exist.</exception>
         public Variable GetVariable(string name)
         {
             if (variables.ContainsKey(name))
@@ -82,6 +88,11 @@ namespace GoyokVersenyFeladat.Minescript
             }
         }
 
+        /// <summary>
+        /// Determines whether a variable with the specified name exists in the collection.
+        /// </summary>
+        /// <param name="name">The name of the variable to check for. Cannot be <see langword="null"/> or empty.</param>
+        /// <returns><see langword="true"/> if a variable with the specified name exists; otherwise, <see langword="false"/>.</returns>
         public bool HasVariable(string name)
         {
             return variables.ContainsKey(name);
