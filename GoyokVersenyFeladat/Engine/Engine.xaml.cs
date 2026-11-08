@@ -54,8 +54,6 @@ namespace GoyokVersenyFeladat.Engine
             Redraw();
         }
 
-        // ---------- IRobotController (hiba esetén a hibakód a kivétel szövege) ----------
-
         public void StepForward()
         {
             if (Front() == 1) throw new MineScriptException("E_BEDROCK_HIT");
@@ -64,7 +62,6 @@ namespace GoyokVersenyFeladat.Engine
             Redraw();
         }
 
-        /// <summary>fok = negyedfordulatok száma balra (nem fok!), 0 esetén nem változik az irány.</summary>
         public void TurnBy(int fok)
         {
             if (fok < 0) throw new MineScriptException("E_BAD_ARG");
@@ -90,13 +87,11 @@ namespace GoyokVersenyFeladat.Engine
             return Front() == w;
         }
 
-        // ---------- kézi vezérlés (a gombok a XAML-ben) ----------
-
         private void Manual(Action a)
         {
             ManualControl?.Invoke();
             if (cells == null) return;
-            try { a(); } catch (MineScriptException) { } // falnak ütközés / nincs arany: hiba nélkül megáll
+            try { a(); } catch (MineScriptException) { }
         }
 
         private void Turn_Click(object sender, RoutedEventArgs e) => Manual(() => TurnBy(1));
