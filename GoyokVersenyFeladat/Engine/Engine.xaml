@@ -29,7 +29,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <Grid Background="#1B1E27">
+    <Grid>
         <Border x:Name="Bar" Height="46" VerticalAlignment="Bottom" Background="#23272F"
                 BorderBrush="#2F3542" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
