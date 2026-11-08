@@ -1,13 +1,42 @@
 ﻿<UserControl x:Class="GoyokVersenyFeladat.Engine.Engine"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
-        <Border x:Name="Bar" Height="40" VerticalAlignment="Bottom" Background="#EEEEEE">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Fordulj balra" Click="Turn_Click" Margin="5,0"/>
-                <Button Content="Előre" Click="Step_Click" Margin="5,0"/>
-                <Button Content="Bányássz" Click="Mine_Click" Margin="5,0"/>
-                <TextBlock x:Name="Status" Margin="15,0" VerticalAlignment="Center"/>
+    <UserControl.Resources>
+        <Style x:Key="BlockButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2D5F9A"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="5" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#3A74BA"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#22497A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="#1B1E27">
+        <Border x:Name="Bar" Height="46" VerticalAlignment="Bottom" Background="#23272F"
+                BorderBrush="#2F3542" BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
+                <Button Content="turn_by" Click="Turn_Click" Style="{StaticResource BlockButton}"/>
+                <Button Content="step_forward" Click="Step_Click" Style="{StaticResource BlockButton}"/>
+                <Button Content="mine_here" Click="Mine_Click" Style="{StaticResource BlockButton}"/>
+                <TextBlock x:Name="Status" Margin="15,0" Foreground="#9AA4BA" VerticalAlignment="Center"/>
             </StackPanel>
         </Border>
     </Grid>
