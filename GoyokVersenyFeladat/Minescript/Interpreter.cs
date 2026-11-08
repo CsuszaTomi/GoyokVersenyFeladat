@@ -268,7 +268,7 @@ namespace GoyokVersenyFeladat.Minescript
                         {
                             whileStack.Pop();
                         }
-                        currLineIndex = Next(SkipBlock(lines, currLineIndex));
+                        currLineIndex = Next(SkipBlock(lines, currLineIndex));  
                     }
                     break;
                 case "step": //step forward n
