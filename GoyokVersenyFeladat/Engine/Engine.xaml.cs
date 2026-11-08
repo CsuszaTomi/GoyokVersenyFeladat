@@ -1,4 +1,6 @@
 ﻿using GoyokVersenyFeladat.Interfaces;
+using GoyokVersenyFeladat.Minescript;
+using GoyokVersenyFeladat.Models;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,7 +8,7 @@ using System.Windows.Media;
 
 namespace GoyokVersenyFeladat.Engine
 {
-    public partial class Engine : Window, IRobotController
+    public partial class Engine : UserControl, IRobotController
     {
         // Irányok: 0 kelet, 1 észak, 2 nyugat, 3 dél (a balra fordulás +1). Cellák: 0 üres, 1 fal, 2 arany.
         private static readonly int[] DRow = { 0, -1, 0, 1 };
@@ -56,7 +58,7 @@ namespace GoyokVersenyFeladat.Engine
 
         public void StepForward()
         {
-            if (Front() == 1) throw new ArgumentException("E_BEDROCK_HIT");
+            if (Front() == 1) throw new MineScriptException("E_BEDROCK_HIT");
             row += DRow[dir]; col += DCol[dir];
             seen[row, col] = true;
             Redraw();
@@ -65,14 +67,14 @@ namespace GoyokVersenyFeladat.Engine
         /// <summary>fok = negyedfordulatok száma balra (nem fok!), 0 esetén nem változik az irány.</summary>
         public void TurnBy(int fok)
         {
-            if (fok < 0) throw new ArgumentException("E_BAD_ARG");
+            if (fok < 0) throw new MineScriptException("E_BAD_ARG");
             dir = (dir + fok % 4) % 4;
             Redraw();
         }
 
         public void MineHere()
         {
-            if (cells[row, col] != 2) throw new ArgumentException("E_NO_GOLD");
+            if (cells[row, col] != 2) throw new MineScriptException("E_NO_GOLD");
             cells[row, col] = 0;
             mined++;
             Redraw();
@@ -81,7 +83,7 @@ namespace GoyokVersenyFeladat.Engine
         /// <summary>objectType: "0" üres, "1" fal, "2" arany. A vizsgált mező felfedezetté válik.</summary>
         public bool IsThere(string objectType)
         {
-            if (!int.TryParse(objectType, out int w) || w < 0 || w > 2) throw new ArgumentException("E_BAD_ARG");
+            if (!int.TryParse(objectType, out int w) || w < 0 || w > 2) throw new MineScriptException("E_BAD_ARG");
             int fr = row + DRow[dir], fc = col + DCol[dir];
             if (fr >= 0 && fr < rows && fc >= 0 && fc < cols) seen[fr, fc] = true;
             Redraw();
@@ -94,7 +96,7 @@ namespace GoyokVersenyFeladat.Engine
         {
             ManualControl?.Invoke();
             if (cells == null) return;
-            try { a(); } catch (ArgumentException) { } // falnak ütközés / nincs arany: hiba nélkül megáll
+            try { a(); } catch (MineScriptException) { } // falnak ütközés / nincs arany: hiba nélkül megáll
         }
 
         private void Turn_Click(object sender, RoutedEventArgs e) => Manual(() => TurnBy(1));
