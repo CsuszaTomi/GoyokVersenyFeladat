@@ -1,19 +1,22 @@
-﻿using System;
+﻿using GoyokVersenyFeladat.Interfaces;
+using GoyokVersenyFeladat.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GoyokVersenyFeladat.Models;
 
 namespace GoyokVersenyFeladat.Minescript
 {
     internal class ExpressionEvaluator
     {
         private readonly VariableManager variableManager;
+        private readonly IRobotController robotController;
 
-        public ExpressionEvaluator(VariableManager variableManager)
+        public ExpressionEvaluator(VariableManager variableManager, IRobotController robotController)
         {
             this.variableManager = variableManager;
+            this.robotController = robotController;
         }
 
         /// <summary>
@@ -52,6 +55,11 @@ namespace GoyokVersenyFeladat.Minescript
             {
                 return EvaluateToken(tokens[0]);
             }
+            if (tokens[0].Value == "isThere")
+            {
+                return robotController.IsThere(tokens[1].Value);
+            }
+
             object eredmeny = EvaluateToken(tokens[0]);
             for (int i = 1; i < tokens.Count; i += 2)
             {

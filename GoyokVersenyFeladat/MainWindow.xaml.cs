@@ -1,4 +1,5 @@
-﻿using GoyokVersenyFeladat.Minescript;
+﻿using GoyokVersenyFeladat.Interfaces;
+using GoyokVersenyFeladat.Minescript;
 using GoyokVersenyFeladat.Models;
 using System.Reflection.PortableExecutable;
 using System.Text;
@@ -23,15 +24,24 @@ namespace GoyokVersenyFeladat
         public MainWindow()
         {
             InitializeComponent();
-            var (mapData, scriptLines) = inpReader.ReadInput("pelda.txt");
-            Tokenizer tokenizer = new Tokenizer();
-            List<ProgramLine> parsedLines = tokenizer.Tokenize(scriptLines);
-            if (parsedLines.Count > 0)
+            string[] scriptLines = new string[]
             {
-                var firstLine = parsedLines[0];
-                MessageBox.Show($"1. sor tokenjei ({firstLine.Tokens.Count} db, behúzás: {firstLine.IndentLevel}):\n" +
-                                string.Join("\n", firstLine.Tokens.Select(t => $"{t.Type}: {t.Value}")));
-            }
+    "set count to 0",
+    "while count < 2",
+    "    step_forward",
+    "    turn_by 90",
+    "    set count to count + 1",
+    "mine_here"
+            };
+
+            Tokenizer tokenizer = new Tokenizer();
+            List<ProgramLine> program = tokenizer.Tokenize(scriptLines);
+
+            VariableManager vm = new VariableManager();
+            IRobotController dummyRobot = new TesztRobot();
+            Interpreter interpreter = new Interpreter(vm, dummyRobot);
+
+            interpreter.Execute(program);
         }
     }
 }
