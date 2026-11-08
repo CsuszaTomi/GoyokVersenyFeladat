@@ -14,15 +14,12 @@ namespace GoyokVersenyFeladat
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
             string[] args = e.Args;
             bool quiet = args.Length > 0 && args[0] == "-q";
             int first = quiet ? 1 : 0;
-
             LaunchOptions.Quiet = quiet;
             LaunchOptions.InputPath = args.Length > first ? args[first] : null;
             LaunchOptions.OutputPath = args.Length > first + 1 ? args[first + 1] : "output.txt";
-
             if (quiet)
             {
                 int exitCode = 0;
@@ -42,7 +39,6 @@ namespace GoyokVersenyFeladat
                 Shutdown(exitCode);
                 return;
             }
-
             new MainWindow().Show();
         }
     }
