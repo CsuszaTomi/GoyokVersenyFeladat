@@ -28,9 +28,6 @@ namespace GoyokVersenyFeladat.Minescript
             {
                 minescript[i] = sorok[minescriptStartIndex + i];
             }
-            //egy string az eddigi összes adatoról
-            string allData = $"{height} {width}\n{string.Join("\n", map)}\n{string.Join("\n", minescript)}";
-            MessageBox.Show(allData);
             MapData mapData = new MapData
             {
                 Height = height,

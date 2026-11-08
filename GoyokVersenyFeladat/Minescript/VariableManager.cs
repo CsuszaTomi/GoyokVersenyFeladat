@@ -10,6 +10,7 @@ namespace GoyokVersenyFeladat.Minescript
     internal class VariableManager
     {
         private Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
+        private List<string> order = new List<string>(); //létrehozás sorrendje (a nyomkövető nézethez)
 
         /// <summary>
         /// Új futás előtt törli a változókat.
@@ -17,6 +18,17 @@ namespace GoyokVersenyFeladat.Minescript
         public void Clear()
         {
             variables.Clear();
+            order.Clear();
+        }
+
+        /// <summary>
+        /// A változók pillanatnyi állapota (név, megjelenített érték) létrehozásuk sorrendjében.
+        /// </summary>
+        public IReadOnlyList<KeyValuePair<string, string>> Snapshot()
+        {
+            return order
+                .Select(n => new KeyValuePair<string, string>(n, ExpressionEvaluator.Format(variables[n].Value)))
+                .ToList();
         }
 
         /// <summary>
@@ -29,6 +41,7 @@ namespace GoyokVersenyFeladat.Minescript
             if (!variables.TryGetValue(name, out Variable existing))
             {
                 variables.Add(name, new Variable(type, value));
+                order.Add(name);
             }
             else if (existing.Type != type)
             {
