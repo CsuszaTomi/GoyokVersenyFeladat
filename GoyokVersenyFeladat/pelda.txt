@@ -1,8 +1,0 @@
-﻿3 15
-###############
-#.....G.......#
-###############
-set count to 0
-step forward 1
-mine here
-print count

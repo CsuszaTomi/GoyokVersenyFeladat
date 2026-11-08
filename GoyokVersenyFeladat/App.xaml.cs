@@ -21,7 +21,7 @@ namespace GoyokVersenyFeladat
 
             LaunchOptions.Quiet = quiet;
             LaunchOptions.InputPath = args.Length > first ? args[first] : null;
-            LaunchOptions.OutputPath = args.Length > first + 1 ? args[first + 1] : "output.txt";
+            LaunchOptions.OutputPath = args.Length > first + 1 ? args[first + 1] : "output_001.txt";
 
             if (quiet)
             {

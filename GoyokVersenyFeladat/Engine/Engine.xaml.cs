@@ -13,7 +13,9 @@ namespace GoyokVersenyFeladat.Engine
         // Irányok: 0 kelet, 1 észak, 2 nyugat, 3 dél (a balra fordulás +1). Cellák: 0 üres, 1 fal, 2 arany.
         private static readonly int[] DRow = { 0, -1, 0, 1 };
         private static readonly int[] DCol = { 1, 0, -1, 0 };
-        private static readonly Pen GridPen = new Pen(Brushes.DimGray, 1);
+        private static Brush B(string hex) => (Brush)new BrushConverter().ConvertFromString(hex);
+        private static readonly Brush Fog = B("#0D0F14"), Floor = B("#2B3142"), Rock = B("#5C6478"), RobotBrush = B("#4A8AF4"), Back = B("#1B1E27");
+        private static readonly Pen GridPen = new Pen(B("#1B1F2A"), 1);
 
         private int[,] start, cells;
         private bool[,] seen;
@@ -22,9 +24,26 @@ namespace GoyokVersenyFeladat.Engine
         /// <summary>Kézi vezérlésnél lefut: a MainWindow ezen állítsa le a futó programot és ne naplózzon.</summary>
         public event Action ManualControl;
 
+        // A térkép külön elemre rajzol, amit a gyökér Grid első gyerekeként veszünk fel (a gombsor fölé nem kerül).
+        private sealed class Surface : FrameworkElement
+        {
+            public Action<DrawingContext, double, double> Paint;
+
+            protected override void OnRender(DrawingContext dc)
+            {
+                base.OnRender(dc);
+                Paint?.Invoke(dc, ActualWidth, ActualHeight);
+            }
+        }
+
+        private readonly Surface surface = new Surface();
+
         public Engine()
         {
             InitializeComponent();
+            surface.Paint = Draw;
+            surface.Margin = new Thickness(0, 0, 0, Bar.Height);
+            ((Panel)Content).Children.Insert(0, surface);
         }
 
         /// <summary>A térkép sorai (csak a térkép, a "3 15" sor és a kód nélkül). Alaphelyzetbe is állít.</summary>
@@ -54,6 +73,8 @@ namespace GoyokVersenyFeladat.Engine
             Redraw();
         }
 
+        // ---------- IRobotController (hiba esetén a hibakód a kivétel szövege) ----------
+
         public void StepForward()
         {
             if (Front() == 1) throw new MineScriptException("E_BEDROCK_HIT");
@@ -62,6 +83,7 @@ namespace GoyokVersenyFeladat.Engine
             Redraw();
         }
 
+        /// <summary>fok = negyedfordulatok száma balra (nem fok!), 0 esetén nem változik az irány.</summary>
         public void TurnBy(int fok)
         {
             if (fok < 0) throw new MineScriptException("E_BAD_ARG");
@@ -87,11 +109,13 @@ namespace GoyokVersenyFeladat.Engine
             return Front() == w;
         }
 
+        // ---------- kézi vezérlés (a gombok a XAML-ben) ----------
+
         private void Manual(Action a)
         {
             ManualControl?.Invoke();
             if (cells == null) return;
-            try { a(); } catch (MineScriptException) { }
+            try { a(); } catch (MineScriptException) { } // falnak ütközés / nincs arany: hiba nélkül megáll
         }
 
         private void Turn_Click(object sender, RoutedEventArgs e) => Manual(() => TurnBy(1));
@@ -107,24 +131,23 @@ namespace GoyokVersenyFeladat.Engine
         private void Redraw()
         {
             Status.Text = $"Arany: {mined}   Szenzor: {new[] { "üres", "fal", "arany" }[Front()]}";
-            InvalidateVisual();
+            surface.InvalidateVisual();
         }
 
-        protected override void OnRender(DrawingContext dc)
+        private void Draw(DrawingContext dc, double w, double h)
         {
-            base.OnRender(dc);
+            dc.DrawRectangle(Back, null, new Rect(0, 0, w, h));
             if (cells == null) return;
 
-            double h = ActualHeight - Bar.ActualHeight;
-            double s = Math.Min(ActualWidth / cols, h / rows);
+            double s = Math.Min(w / cols, h / rows);
             if (s <= 0) return;
-            double ox = (ActualWidth - s * cols) / 2, oy = (h - s * rows) / 2;
+            double ox = (w - s * cols) / 2, oy = (h - s * rows) / 2;
 
             for (int i = 0; i < rows; i++)
                 for (int j = 0; j < cols; j++)
                 {
                     var rect = new Rect(ox + j * s, oy + i * s, s, s);
-                    Brush b = !seen[i, j] ? Brushes.Black : cells[i, j] == 1 ? Brushes.Gray : Brushes.Tan;
+                    Brush b = !seen[i, j] ? Fog : cells[i, j] == 1 ? Rock : Floor;
                     dc.DrawRectangle(b, GridPen, rect);
                     if (seen[i, j] && cells[i, j] == 2)
                         dc.DrawEllipse(Brushes.Gold, null, new Point(rect.X + s / 2, rect.Y + s / 2), s * 0.25, s * 0.25);
@@ -148,7 +171,7 @@ namespace GoyokVersenyFeladat.Engine
                 ctx.LineTo(left, true, false);
                 ctx.LineTo(right, true, false);
             }
-            dc.DrawGeometry(Brushes.DodgerBlue, null, geo);
+            dc.DrawGeometry(RobotBrush, null, geo);
         }
     }
 }
