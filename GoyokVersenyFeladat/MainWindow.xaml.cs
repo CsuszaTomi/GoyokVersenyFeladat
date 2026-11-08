@@ -17,6 +17,7 @@ namespace GoyokVersenyFeladat
         private static readonly SolidColorBrush ClrHint = new(Color.FromRgb(0x44, 0x44, 0x44));
         private static readonly SolidColorBrush ClrDelete = new(Color.FromRgb(0x88, 0x88, 0x88));
         private static readonly SolidColorBrush ClrChildZone = new(Color.FromArgb(0x80, 0x18, 0x19, 0x22));
+        private static readonly SolidColorBrush ClrElseZone = new(Color.FromArgb(0x80, 0x22, 0x14, 0x14));
 
         private readonly List<Block> _roots = new();
 
@@ -49,7 +50,7 @@ namespace GoyokVersenyFeladat
 
         Border BuildUI(Block node, List<Block> siblings)
         {
-            Brush bg = node.Keyword is "if" or "while"
+            Brush bg = node.Keyword is "if" or "ifelse" or "while"
                 ? (Brush)FindResource("BlockCtrl")
                 : node.Keyword is "set" or "isThere"
                     ? (Brush)FindResource("BlockVal")
@@ -57,9 +58,10 @@ namespace GoyokVersenyFeladat
 
             var header = new StackPanel { Orientation = Orientation.Horizontal };
 
+            string label = node.Keyword == "ifelse" ? "if-else" : node.Keyword;
             header.Children.Add(new TextBlock
             {
-                Text = "● " + node.Keyword,
+                Text = "● " + label,
                 FontFamily = new FontFamily("Inter"),
                 FontSize = 11,
                 FontWeight = FontWeights.Medium,
@@ -87,50 +89,23 @@ namespace GoyokVersenyFeladat
             var stack = new StackPanel();
             stack.Children.Add(header);
 
-            if (node.Keyword is "if" or "while")
+            if (node.Keyword is "if" or "ifelse" or "while")
             {
-                var hint = new TextBlock
+                stack.Children.Add(BuildChildZone(node, node.Children, ClrChildZone));
+            }
+
+            if (node.Keyword is "ifelse")
+            {
+                stack.Children.Add(new TextBlock
                 {
-                    Text = "Húzz blokkot ide…",
-                    Foreground = ClrHint,
-                    FontFamily = new FontFamily("Segoe UI"),
-                    FontSize = 10,
-                    Margin = new Thickness(2, 0, 0, 0)
-                };
-
-                var childPanel = new StackPanel { AllowDrop = true };
-
-                foreach (var child in node.Children)
-                {
-                    hint.Visibility = Visibility.Collapsed;
-                    childPanel.Children.Add(BuildUI(child, node.Children));
-                }
-
-                childPanel.Drop += (_, e2) =>
-                {
-                    if (node.Depth + 1 >= 3)
-                    {
-                        MessageBox.Show("Maximum 3 szint mélységig ágyazhatsz be.",
-                            "Mélység korlát", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                    string kw = (string)e2.Data.GetData(typeof(string));
-                    node.Children.Add(new Block { Keyword = kw, Depth = node.Depth + 1 });
-                    e2.Handled = true;
-                    Render();
-                };
-
-                childPanel.Children.Add(hint);
-
-                stack.Children.Add(new Border
-                {
-                    Background = ClrChildZone,
-                    CornerRadius = new CornerRadius(5),
-                    Margin = new Thickness(12, 8, 0, 0),
-                    Padding = new Thickness(8, 6, 8, 6),
-                    AllowDrop = true,
-                    Child = childPanel
+                    Text = "else",
+                    Foreground = new SolidColorBrush(Color.FromRgb(0xCC, 0x88, 0x44)),
+                    FontFamily = new FontFamily("Consolas"),
+                    FontSize = 11,
+                    FontWeight = FontWeights.Bold,
+                    Margin = new Thickness(4, 6, 0, 2)
                 });
+                stack.Children.Add(BuildChildZone(node, node.ElseChildren, ClrElseZone));
             }
 
             var outer = new Border
@@ -157,6 +132,52 @@ namespace GoyokVersenyFeladat
             };
 
             return outer;
+        }
+
+        Border BuildChildZone(Block parent, List<Block> childList, SolidColorBrush zoneBg)
+        {
+            var hint = new TextBlock
+            {
+                Text = "Húzz blokkot ide…",
+                Foreground = ClrHint,
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 10,
+                Margin = new Thickness(2, 0, 0, 0)
+            };
+
+            var childPanel = new StackPanel { AllowDrop = true };
+
+            foreach (var child in childList)
+            {
+                hint.Visibility = Visibility.Collapsed;
+                childPanel.Children.Add(BuildUI(child, childList));
+            }
+
+            childPanel.Drop += (_, e2) =>
+            {
+                if (parent.Depth + 1 >= 3)
+                {
+                    MessageBox.Show("Maximum 3 szint mélységig ágyazhatsz be.",
+                        "Mélység korlát", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                string kw = (string)e2.Data.GetData(typeof(string));
+                childList.Add(new Block { Keyword = kw, Depth = parent.Depth + 1 });
+                e2.Handled = true;
+                Render();
+            };
+
+            childPanel.Children.Add(hint);
+
+            return new Border
+            {
+                Background = zoneBg,
+                CornerRadius = new CornerRadius(5),
+                Margin = new Thickness(12, 8, 0, 0),
+                Padding = new Thickness(8, 6, 8, 6),
+                AllowDrop = true,
+                Child = childPanel
+            };
         }
 
         void AddParamFields(StackPanel header, Block node)
@@ -199,6 +220,7 @@ namespace GoyokVersenyFeladat
                         break;
                     }
                 case "if":
+                case "ifelse":
                 case "while":
                     {
                         var tbLeft = MakeTextBox(node.Params.Count > 0 ? node.Params[0] : "x", 52);
@@ -235,6 +257,18 @@ namespace GoyokVersenyFeladat
         void AppendCode(StringBuilder sb, Block node, int indent)
         {
             string pad = new string(' ', indent * 4);
+
+            if (node.Keyword == "ifelse")
+            {
+                sb.AppendLine($"{pad}if {SafeParam(node, 0, "x")} {SafeParam(node, 1, "==")} {SafeParam(node, 2, "0")}");
+                foreach (var child in node.Children)
+                    AppendCode(sb, child, indent + 1);
+                sb.AppendLine($"{pad}else");
+                foreach (var child in node.ElseChildren)
+                    AppendCode(sb, child, indent + 1);
+                return;
+            }
+
             string line = node.Keyword switch
             {
                 "step_forward" => $"step forward {SafeParam(node, 0, "1")}",
