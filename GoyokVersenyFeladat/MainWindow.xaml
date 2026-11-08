@@ -521,8 +521,6 @@
             </Border>
 
         </Grid>
-
-        <!-- ÚJ: VÁLTOZÓK + KONZOL (a robot szimulátor (Engine) külön ablakban nyílik meg, lásd MainWindow.Run.cs) -->
         <GridSplitter Grid.Row="2" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                       Background="{StaticResource BorderColor}" Cursor="SizeNS"/>
 
