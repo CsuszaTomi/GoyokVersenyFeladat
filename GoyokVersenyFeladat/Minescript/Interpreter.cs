@@ -23,6 +23,8 @@ namespace GoyokVersenyFeladat.Minescript
         private bool elseTaken = false; //az if hamis volt, és az else sorra ugrottunk
         public bool IsFinished { get; private set; } = true; //a program végrehajtása befejeződött-e
         public string ErrorCode { get; private set; } //ha hiba történt, a hiba kódja
+        public int CurrentLineNumber => IsFinished || currLineIndex >= lines.Count ? -1 : lines[currLineIndex].LineNumber;// A következőként végrehajtandó sor száma a forráskódban (kiemeléshez), -1 ha a futás véget ért.
+        public int InstructionCount => instructionCount;//Eddig feldolgozott programsorok száma.
 
         public Interpreter(VariableManager variableManager, IRobotController robotController, ILogger logger, Action<string> printHandler = null)
         {
@@ -43,6 +45,30 @@ namespace GoyokVersenyFeladat.Minescript
             {
             }
             logger.Flush();
+        }
+
+        /// <summary>
+        /// Változók aktuális állapota (név, megjelenített érték), létrehozásuk sorrendjében.
+        /// </summary>
+        public IReadOnlyList<KeyValuePair<string, string>> Variables => variableManager.Snapshot();
+
+        /// <summary>
+        /// Egyetlen programsor végrehajtása (nyomkövetés és lassított futtatás), a napló minden lépés után fájlba kerül.
+        /// Visszatérési érték: true, ha a futás még tart.
+        /// </summary>
+        public bool StepOnce()
+        {
+            bool running = Step();
+            logger.Flush();
+            return running;
+        }
+
+        /// <summary>
+        /// Futó program leállítása kézi vezérlésnél: nem naplóz semmit, a napló az utolsó állapotában marad.
+        /// </summary>
+        public void Abort()
+        {
+            IsFinished = true;
         }
 
         /// <summary>
@@ -212,7 +238,7 @@ namespace GoyokVersenyFeladat.Minescript
                             && lines[after].Tokens[0].Value == "else"
                             && lines[after].IndentLevel == currLine.IndentLevel)
                         {
-                            currLineIndex = after; // az else sora a következő lépésben kerül naplózásra
+                            currLineIndex = after; //az else sora a következő lépésben kerül naplózásra
                             elseTaken = true;
                         }
                         else
@@ -222,7 +248,7 @@ namespace GoyokVersenyFeladat.Minescript
                     }
                     break;
                 case "else":
-                    // ide csak akkor jutunk, ha az if hamis volt (a többi esetet a FinishIfDone átugorja)
+                    //ide csak akkor jutunk, ha az if hamis volt (a többi esetet a FinishIfDone átugorja)
                     elseTaken = false;
                     currLineIndex = Next(currLineIndex + 1);
                     break;
@@ -245,18 +271,18 @@ namespace GoyokVersenyFeladat.Minescript
                         currLineIndex = Next(SkipBlock(lines, currLineIndex));
                     }
                     break;
-                case "step": // step forward n
+                case "step": //step forward n
                     {
                         logger.Append("step forward");
                         int n = ReadNonNegativeArg(tokens[2]);
                         for (int i = 0; i < n; i++)
                         {
-                            robotController.StepForward(); // falnál / pályaszélnél MineScriptException("E_BEDROCK_HIT")
+                            robotController.StepForward(); //falnál / pályaszélnél MineScriptException("E_BEDROCK_HIT")
                         }
                         currLineIndex = Next(currLineIndex + 1);
                         break;
                     }
-                case "turn": // turn by n (n negyedfordulat balra)
+                case "turn": //turn by n (n negyedfordulat balra)
                     {
                         logger.Append("turn by");
                         int n = ReadNonNegativeArg(tokens[2]);
@@ -264,9 +290,9 @@ namespace GoyokVersenyFeladat.Minescript
                         currLineIndex = Next(currLineIndex + 1);
                         break;
                     }
-                case "mine": // mine here
+                case "mine": //mine here
                     logger.Append("mine here");
-                    robotController.MineHere(); // arany nélkül MineScriptException("E_NO_GOLD")
+                    robotController.MineHere(); //arany nélkül MineScriptException("E_NO_GOLD")
                     currLineIndex = Next(currLineIndex + 1);
                     break;
                 case "print":

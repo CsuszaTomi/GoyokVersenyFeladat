@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GoyokVersenyFeladat": {
+      "commandName": "Project",
+      "commandLineArgs": "-q input_001.txt output_001.txt"
+    }
+  }
+}
