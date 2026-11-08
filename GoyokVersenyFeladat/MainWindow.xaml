@@ -7,7 +7,6 @@
         Background="#1B1E26">
 
     <Window.Resources>
-        <!-- Színek -->
         <SolidColorBrush x:Key="BgMain"      Color="#1B1E26"/>
         <SolidColorBrush x:Key="BgPanel"     Color="#22262E"/>
         <SolidColorBrush x:Key="BgToolbar"   Color="#292D38"/>
@@ -20,16 +19,15 @@
         <SolidColorBrush x:Key="BlockVal"    Color="#2E7858"/>
         <SolidColorBrush x:Key="GreenBtn"    Color="#3A7A3A"/>
 
-        <!-- Alap gomb stílus -->
         <Style x:Key="BaseBtn" TargetType="Button">
             <Setter Property="Foreground"       Value="{StaticResource FgMain}"/>
             <Setter Property="Background"       Value="{StaticResource BgPanel}"/>
             <Setter Property="BorderBrush"      Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness"  Value="1"/>
             <Setter Property="Padding"          Value="10,4"/>
-            <Setter Property="FontSize"         Value="12"/>
-            <Setter Property="FontFamily"       Value="San Francisco"/>
-            <Setter Property="Cursor"           Value="Hand"/>
+            <Setter Property="FontSize"          Value="12"/>
+            <Setter Property="FontFamily"        Value="San Francisco"/>
+            <Setter Property="Cursor"            Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -54,7 +52,6 @@
             </Setter>
         </Style>
 
-        <!-- Zöld (Run) gomb -->
         <Style x:Key="RunBtn" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
             <Setter Property="Background"  Value="#3A7A3A"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -62,7 +59,6 @@
             <Setter Property="FontWeight"  Value="SemiBold"/>
         </Style>
 
-        <!-- Debug gomb -->
         <Style x:Key="DebugBtn" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
             <Setter Property="Background"  Value="#7A6020"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -70,64 +66,78 @@
             <Setter Property="FontWeight"  Value="SemiBold"/>
         </Style>
 
-        <!-- Stop gomb -->
         <Style x:Key="StopBtn" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
             <Setter Property="Background"  Value="#7A2020"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Foreground"  Value="White"/>
         </Style>
 
-        <!-- Panel fejléc szöveg -->
         <Style x:Key="PanelTitle" TargetType="TextBlock">
-            <Setter Property="Foreground"       Value="{StaticResource FgDim}"/>
-            <Setter Property="FontSize"         Value="10"/>
-            <Setter Property="FontWeight"       Value="Bold"/>
-            <Setter Property="FontFamily"       Value="Inter"/>
+            <Setter Property="Foreground"        Value="{StaticResource FgDim}"/>
+            <Setter Property="FontSize"          Value="10"/>
+            <Setter Property="FontWeight"        Value="Bold"/>
+            <Setter Property="FontFamily"        Value="Inter"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
-        <!-- Paletta blokk stílus -->
         <Style x:Key="PaletteBlock" TargetType="Border">
-            <Setter Property="CornerRadius"  Value="6"/>
-            <Setter Property="Padding"       Value="8,6"/>
-            <Setter Property="Margin"        Value="0,0,0,4"/>
-            <Setter Property="Cursor"        Value="Hand"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding"      Value="8,6"/>
+            <Setter Property="Margin"       Value="0,0,0,4"/>
+            <Setter Property="Cursor"       Value="Hand"/>
         </Style>
 
-        <!-- Kategória felirat -->
         <Style x:Key="CatLabel" TargetType="TextBlock">
-            <Setter Property="FontSize"    Value="10"/>
-            <Setter Property="FontWeight"  Value="Bold"/>
-            <Setter Property="FontFamily"  Value="Inter"/>
-            <Setter Property="Margin"      Value="4,0,0,5"/>
+            <Setter Property="FontSize"   Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Inter"/>
+            <Setter Property="Margin"     Value="4,0,0,5"/>
         </Style>
 
-        <!-- ScrollViewer stílus (vékony scrollbar) -->
         <Style TargetType="ScrollViewer">
             <Setter Property="VerticalScrollBarVisibility"   Value="Auto"/>
             <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
         </Style>
 
-        <!-- Kód nézet sor -->
         <Style x:Key="CodeLine" TargetType="TextBlock">
-            <Setter Property="FontFamily"  Value="Consolas"/>
-            <Setter Property="FontSize"    Value="12"/>
-            <Setter Property="Foreground"  Value="{StaticResource FgMain}"/>
-            <Setter Property="Margin"      Value="0,1"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize"   Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource FgMain}"/>
+            <Setter Property="Margin"     Value="0,1"/>
+        </Style>
+
+        <!-- Közös ComboBox stílus (isThere + operátorok) -->
+        <Style x:Key="DarkCombo" TargetType="ComboBox">
+            <Setter Property="Background"     Value="#2A2D3A"/>
+            <Setter Property="Foreground"     Value="Black"/>
+            <Setter Property="BorderBrush"    Value="#4A5070"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily"     Value="Consolas"/>
+            <Setter Property="FontSize"       Value="11"/>
+            <Setter Property="Padding"        Value="4,2"/>
+        </Style>
+
+        <Style x:Key="DarkComboItem" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="#2A2D3A"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#3A3F55"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#4A5070"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="42"/>
-            <!-- Toolbar -->
             <RowDefinition Height="*"/>
-            <!-- IDE terület -->
         </Grid.RowDefinitions>
 
-        <!-- ═══════════════════════════════════════════════
-             TOOLBAR
-        ════════════════════════════════════════════════ -->
+        <!-- TOOLBAR -->
         <Border Grid.Row="0"
                 Background="{StaticResource BgToolbar}"
                 BorderBrush="{StaticResource BorderColor}"
@@ -150,18 +160,15 @@
 
                 <Button Content="▶  Futtatás" Style="{StaticResource RunBtn}"   Margin="0,0,6,0"/>
                 <Button Content="⬛  Debug"   Style="{StaticResource DebugBtn}" Margin="0,0,6,0"/>
-                <Button Content="■  Stop"    Style="{StaticResource StopBtn}"   Margin="0,0,6,0"/>
+                <Button Content="■  Stop"     Style="{StaticResource StopBtn}"  Margin="0,0,6,0"/>
 
                 <Rectangle Width="1" Height="22"
                            Fill="{StaticResource BorderColor}"
                            Margin="0,0,8,0"/>
 
-                <Button Content="Törlés"  
-
-                        FontWeight="SemiBold"
+                <Button Content="Törlés" FontWeight="SemiBold"
                         Style="{StaticResource BaseBtn}"/>
 
-                <!-- jobb oldal -->
                 <TextBlock x:Name="StatusBar"
                            Text="Készen áll"
                            Foreground="{StaticResource FgDim}"
@@ -173,22 +180,17 @@
             </StackPanel>
         </Border>
 
-        <!-- ═══════════════════════════════════════════════
-             IDE TERÜLET  (3 oszlop: paletta | vászon | kód)
-             GridSplitter-ekkel reszponzív
-        ════════════════════════════════════════════════ -->
+        <!-- IDE TERÜLET -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="190" MinWidth="140" MaxWidth="320"/>
                 <ColumnDefinition Width="4"/>
-                <!-- splitter -->
                 <ColumnDefinition Width="*"   MinWidth="200"/>
                 <ColumnDefinition Width="4"/>
-                <!-- splitter -->
                 <ColumnDefinition Width="300" MinWidth="180" MaxWidth="480"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ─── PALETTA ─── -->
+            <!-- PALETTA -->
             <Border Grid.Column="0"
                     Background="{StaticResource BgPanel}"
                     BorderBrush="{StaticResource BorderColor}"
@@ -199,7 +201,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- fejléc -->
                     <Border Grid.Row="0"
                             Background="{StaticResource BgToolbar}"
                             BorderBrush="{StaticResource BorderColor}"
@@ -208,76 +209,190 @@
                         <TextBlock Text="BLOKKOK" Style="{StaticResource PanelTitle}"/>
                     </Border>
 
-                    <!-- blokk lista -->
                     <ScrollViewer Grid.Row="1" Padding="8,10,8,10">
                         <StackPanel>
 
-                            <!-- Parancs kategória -->
                             <TextBlock Text="PARANCS" Style="{StaticResource CatLabel}"
                                        Foreground="#6AACDB"/>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockCmd}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● step_forward"/>
+                                    Background="{StaticResource BlockCmd}"
+                                    PreviewMouseMove="Block_MouseMove"
+                                    Tag="step_forward">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● step_forward" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBox Width="40" Text="1"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                </StackPanel>
                             </Border>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockCmd}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● turn_by"/>
+                                    Background="{StaticResource BlockCmd}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="turn_by">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● turn_by" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBox Width="40" Text="1"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                </StackPanel>
                             </Border>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockCmd}">
+                                    Background="{StaticResource BlockCmd}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="mine_here">
                                 <TextBlock FontFamily="Inter" FontSize="11"
                                            FontWeight="Medium" Foreground="White"
                                            Text="● mine_here"/>
                             </Border>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockCmd}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● print"/>
+                                    Background="{StaticResource BlockCmd}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="print">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● print" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBox Width="72" Text="x"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                </StackPanel>
                             </Border>
 
-                            <!-- Vezérlő kategória -->
                             <TextBlock Text="VEZÉRLŐ" Style="{StaticResource CatLabel}"
                                        Foreground="#B07FE0" Margin="4,10,0,5"/>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockCtrl}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● if"/>
+                                    Background="{StaticResource BlockCtrl}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="if">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● if" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBox Width="52" Text="x"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                    <ComboBox Width="52" Margin="4,0"
+                                              Style="{StaticResource DarkCombo}">
+                                        <ComboBox.Resources>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"     Color="#2A2D3A"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="Black"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#4A5070"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
+                                        </ComboBox.Resources>
+                                        <ComboBoxItem Content="=="  IsSelected="True" Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="!="  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&lt;"  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&lt;=" Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&gt;"  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&gt;=" Style="{StaticResource DarkComboItem}"/>
+                                    </ComboBox>
+                                    <TextBox Width="52" Text="0"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                </StackPanel>
                             </Border>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockCtrl}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● while"/>
+                                    Background="{StaticResource BlockCtrl}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="while">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● while" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBox Width="52" Text="x"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                    <ComboBox Width="52" Margin="4,0"
+                                              Style="{StaticResource DarkCombo}">
+                                        <ComboBox.Resources>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"     Color="#2A2D3A"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="Black"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#4A5070"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
+                                        </ComboBox.Resources>
+                                        <ComboBoxItem Content="=="  IsSelected="True" Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="!="  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&lt;"  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&lt;=" Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&gt;"  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="&gt;=" Style="{StaticResource DarkComboItem}"/>
+                                    </ComboBox>
+                                    <TextBox Width="52" Text="0"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                </StackPanel>
                             </Border>
 
-                            <!-- Érték kategória -->
                             <TextBlock Text="ÉRTÉK" Style="{StaticResource CatLabel}"
                                        Foreground="#5AC89A" Margin="4,10,0,5"/>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockVal}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● set"/>
+                                    Background="{StaticResource BlockVal}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="set">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● set" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <TextBox Width="52" Text="x"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                    <TextBlock Text="=" Foreground="#AAAACC"
+                                               FontFamily="Consolas" FontSize="11"
+                                               VerticalAlignment="Center" Margin="4,0"/>
+                                    <TextBox Width="64" Text="0"
+                                             Background="#2A2D3A" Foreground="White"
+                                             BorderBrush="#4A5070" BorderThickness="1"
+                                             FontFamily="Consolas" FontSize="11" Padding="4,2"/>
+                                </StackPanel>
                             </Border>
 
                             <Border Style="{StaticResource PaletteBlock}"
-                                    Background="{StaticResource BlockVal}">
-                                <TextBlock FontFamily="Inter" FontSize="11"
-                                           FontWeight="Medium" Foreground="White"
-                                           Text="● isThere"/>
+                                    Background="{StaticResource BlockVal}"
+                                    MouseMove="Block_MouseMove"
+                                    Tag="isThere">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Inter" FontSize="11"
+                                               FontWeight="Medium" Foreground="White"
+                                               Text="● isThere" VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <ComboBox Width="72"
+                                              Style="{StaticResource DarkCombo}">
+                                        <ComboBox.Resources>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"     Color="#2A2D3A"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="Black"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"  Color="#4A5070"/>
+                                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
+                                        </ComboBox.Resources>
+                                        <ComboBoxItem Content="wall"  IsSelected="True" Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="gold"  Style="{StaticResource DarkComboItem}"/>
+                                        <ComboBoxItem Content="empty" Style="{StaticResource DarkComboItem}"/>
+                                    </ComboBox>
+                                </StackPanel>
                             </Border>
 
                         </StackPanel>
@@ -292,7 +407,7 @@
                           Background="{StaticResource BorderColor}"
                           Cursor="SizeWE"/>
 
-            <!-- ─── BLOKK VÁSZON ─── -->
+            <!-- BLOKK VÁSZON -->
             <Border Grid.Column="2"
                     Background="{StaticResource BgMain}">
                 <Grid>
@@ -301,7 +416,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- fejléc -->
                     <Border Grid.Row="0"
                             Background="{StaticResource BgToolbar}"
                             BorderBrush="{StaticResource BorderColor}"
@@ -310,7 +424,6 @@
                         <TextBlock Text="BLOKK SZERKESZTŐ" Style="{StaticResource PanelTitle}"/>
                     </Border>
 
-                    <!-- üres állapot -->
                     <StackPanel Grid.Row="1"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
@@ -327,12 +440,16 @@
                                    HorizontalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- ide kerül futásidőben a blokk lista (ItemsControl / Canvas) -->
                     <ScrollViewer Grid.Row="1"
                                   x:Name="BlockCanvas"
                                   AllowDrop="True"
                                   Padding="16"
-                                  VerticalScrollBarVisibility="Auto"/>
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="BlockPanel"
+                                    AllowDrop="True"
+                                    Drop="BlockPanel_Drop"
+                                    Background="Transparent"/>
+                    </ScrollViewer>
                 </Grid>
             </Border>
 
@@ -343,7 +460,7 @@
                           Background="{StaticResource BorderColor}"
                           Cursor="SizeWE"/>
 
-            <!-- ─── KÓD NÉZET ─── -->
+            <!-- KÓD NÉZET -->
             <Border Grid.Column="4"
                     Background="{StaticResource BgPanel}"
                     BorderBrush="{StaticResource BorderColor}"
@@ -354,7 +471,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- fejléc -->
                     <Border Grid.Row="0"
                             Background="{StaticResource BgToolbar}"
                             BorderBrush="{StaticResource BorderColor}"
@@ -377,15 +493,11 @@
                         </Grid>
                     </Border>
 
-                    <!-- kód terület -->
                     <ScrollViewer Grid.Row="1"
                                   Padding="14,12"
                                   Background="{StaticResource BgMain}">
                         <StackPanel x:Name="CodeView">
-                            <!-- ide generálódnak a sorok kódból -->
-                            <TextBlock Style="{StaticResource CodeLine}">
-                                <Run Foreground="#6A738A" FontStyle="Italic"># MineScript forráskód</Run>
-                            </TextBlock>
+                            <TextBlock Name="CodeTextBlock" Style="{StaticResource CodeLine}"/>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
