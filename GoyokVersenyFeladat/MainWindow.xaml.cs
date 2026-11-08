@@ -1,7 +1,4 @@
-﻿// lang: C#, file: MainWindow.xaml.cs
-// target: Windows 11, .NET 8, WPF
-
-using GoyokVersenyFeladat.Interfaces;
+﻿using GoyokVersenyFeladat.Interfaces;
 using GoyokVersenyFeladat.Minescript;
 using GoyokVersenyFeladat.Models;
 using System.Text;
@@ -14,35 +11,20 @@ namespace GoyokVersenyFeladat
 {
     public partial class MainWindow : Window
     {
+        private static readonly SolidColorBrush ClrInput = new(Color.FromRgb(0x2A, 0x2D, 0x3A));
+        private static readonly SolidColorBrush ClrInputBorder = new(Color.FromRgb(0x4A, 0x50, 0x70));
+        private static readonly SolidColorBrush ClrLabel = new(Color.FromRgb(0xAA, 0xAA, 0xCC));
+        private static readonly SolidColorBrush ClrHint = new(Color.FromRgb(0x44, 0x44, 0x44));
+        private static readonly SolidColorBrush ClrDelete = new(Color.FromRgb(0x88, 0x88, 0x88));
+        private static readonly SolidColorBrush ClrChildZone = new(Color.FromArgb(0x80, 0x18, 0x19, 0x22));
+
         private readonly List<Block> _roots = new();
 
         public MainWindow()
         {
             InitializeComponent();
-
-            string[] scriptLines = new string[]
-            {
-                "set count to 0",
-                "while count < 2",
-                "    step_forward",
-                "    turn_by 90",
-                "    set count to count + 1",
-                "mine_here"
-            };
-
-            Tokenizer tokenizer = new Tokenizer();
-            List<ProgramLine> program = tokenizer.Tokenize(scriptLines);
-
-            VariableManager vm = new VariableManager();
-            IRobotController dummyRobot = new TesztRobot();
-            Interpreter interpreter = new Interpreter(vm, dummyRobot);
-
-            interpreter.Execute(program);
         }
 
-        // ════════════════════════════════════════════
-        // DRAG – palettáról
-        // ════════════════════════════════════════════
         private void Block_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed) return;
@@ -50,20 +32,13 @@ namespace GoyokVersenyFeladat
             DragDrop.DoDragDrop(border, (string)border.Tag, DragDropEffects.Copy);
         }
 
-        // ════════════════════════════════════════════
-        // DROP – gyökér canvas
-        // ════════════════════════════════════════════
         private void BlockPanel_Drop(object sender, DragEventArgs e)
         {
             string kw = (string)e.Data.GetData(typeof(string));
-            var node = new Block { Keyword = kw, Depth = 0 };
-            _roots.Add(node);
+            _roots.Add(new Block { Keyword = kw, Depth = 0 });
             Render();
         }
 
-        // ════════════════════════════════════════════
-        // RENDER
-        // ════════════════════════════════════════════
         void Render()
         {
             BlockPanel.Children.Clear();
@@ -82,7 +57,7 @@ namespace GoyokVersenyFeladat
 
             var header = new StackPanel { Orientation = Orientation.Horizontal };
 
-            var label = new TextBlock
+            header.Children.Add(new TextBlock
             {
                 Text = "● " + node.Keyword,
                 FontFamily = new FontFamily("Inter"),
@@ -91,8 +66,7 @@ namespace GoyokVersenyFeladat
                 Foreground = Brushes.White,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(0, 0, 8, 0)
-            };
-            header.Children.Add(label);
+            });
 
             AddParamFields(header, node);
 
@@ -101,17 +75,13 @@ namespace GoyokVersenyFeladat
                 Content = "✕",
                 Background = Brushes.Transparent,
                 BorderThickness = new Thickness(0),
-                Foreground = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88)),
+                Foreground = ClrDelete,
                 FontSize = 13,
                 Cursor = Cursors.Hand,
                 Margin = new Thickness(8, 0, 0, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            del.Click += (_, _) =>
-            {
-                siblings.Remove(node);
-                Render();
-            };
+            del.Click += (_, _) => { siblings.Remove(node); Render(); };
             header.Children.Add(del);
 
             var stack = new StackPanel();
@@ -122,7 +92,7 @@ namespace GoyokVersenyFeladat
                 var hint = new TextBlock
                 {
                     Text = "Húzz blokkot ide…",
-                    Foreground = new SolidColorBrush(Color.FromRgb(0x44, 0x44, 0x44)),
+                    Foreground = ClrHint,
                     FontFamily = new FontFamily("Segoe UI"),
                     FontSize = 10,
                     Margin = new Thickness(2, 0, 0, 0)
@@ -152,17 +122,15 @@ namespace GoyokVersenyFeladat
 
                 childPanel.Children.Add(hint);
 
-                var childZone = new Border
+                stack.Children.Add(new Border
                 {
-                    Background = new SolidColorBrush(Color.FromArgb(0x80, 0x18, 0x19, 0x22)),
+                    Background = ClrChildZone,
                     CornerRadius = new CornerRadius(5),
                     Margin = new Thickness(12, 8, 0, 0),
                     Padding = new Thickness(8, 6, 8, 6),
                     AllowDrop = true,
                     Child = childPanel
-                };
-
-                stack.Children.Add(childZone);
+                });
             }
 
             var outer = new Border
@@ -191,9 +159,6 @@ namespace GoyokVersenyFeladat
             return outer;
         }
 
-        // ════════════════════════════════════════════
-        // INLINE PARAMÉTER MEZŐK
-        // ════════════════════════════════════════════
         void AddParamFields(StackPanel header, Block node)
         {
             switch (node.Keyword)
@@ -216,18 +181,17 @@ namespace GoyokVersenyFeladat
                 case "set":
                     {
                         var tbVar = MakeTextBox(node.Params.Count > 0 ? node.Params[0] : "x", 52);
-                        var eq = MakeLabel("=");
                         var tbVal = MakeTextBox(node.Params.Count > 1 ? node.Params[1] : "0", 64);
                         tbVar.TextChanged += (_, _) => SyncParam(node, 0, tbVar.Text);
                         tbVal.TextChanged += (_, _) => SyncParam(node, 1, tbVal.Text);
                         header.Children.Add(tbVar);
-                        header.Children.Add(eq);
+                        header.Children.Add(MakeLabel("="));
                         header.Children.Add(tbVal);
                         break;
                     }
                 case "isThere":
                     {
-                        var cb = MakeCombo(new[] { "wall", "gold", "empty" },
+                        var cb = MakeCombo(["wall", "gold", "empty"],
                                            node.Params.Count > 0 ? node.Params[0] : "wall");
                         cb.SelectionChanged += (_, _) =>
                             SyncParam(node, 0, (cb.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "wall");
@@ -238,15 +202,13 @@ namespace GoyokVersenyFeladat
                 case "while":
                     {
                         var tbLeft = MakeTextBox(node.Params.Count > 0 ? node.Params[0] : "x", 52);
-                        var cbOp = MakeCombo(new[] { "==", "!=", "<", "<=", ">", ">=" },
+                        var cbOp = MakeCombo(["==", "!=", "<", "<=", ">", ">="],
                                                 node.Params.Count > 1 ? node.Params[1] : "==", 52);
                         var tbRight = MakeTextBox(node.Params.Count > 2 ? node.Params[2] : "0", 52);
-
                         tbLeft.TextChanged += (_, _) => SyncParam(node, 0, tbLeft.Text);
                         cbOp.SelectionChanged += (_, _) =>
                             SyncParam(node, 1, (cbOp.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "==");
                         tbRight.TextChanged += (_, _) => SyncParam(node, 2, tbRight.Text);
-
                         header.Children.Add(tbLeft);
                         header.Children.Add(cbOp);
                         header.Children.Add(tbRight);
@@ -262,9 +224,6 @@ namespace GoyokVersenyFeladat
             RefreshCode();
         }
 
-        // ════════════════════════════════════════════
-        // KÓD GENERÁLÁS
-        // ════════════════════════════════════════════
         void RefreshCode()
         {
             var sb = new StringBuilder();
@@ -276,22 +235,19 @@ namespace GoyokVersenyFeladat
         void AppendCode(StringBuilder sb, Block node, int indent)
         {
             string pad = new string(' ', indent * 4);
-
             string line = node.Keyword switch
             {
-                "set" => $"set {SafeParam(node, 0)} {SafeParam(node, 1)}",
-                "step_forward" => $"step_forward {SafeParam(node, 0, "1")}",
-                "turn_by" => $"turn_by {SafeParam(node, 0, "1")}",
+                "step_forward" => $"step forward {SafeParam(node, 0, "1")}",
+                "turn_by" => $"turn by {SafeParam(node, 0, "1")}",
+                "mine_here" => "mine here",
                 "print" => $"print {SafeParam(node, 0, "x")}",
-                "mine_here" => "mine_here",
+                "set" => $"set {SafeParam(node, 0, "x")} to {SafeParam(node, 1, "0")}",
                 "isThere" => $"isThere {SafeParam(node, 0, "wall")}",
                 "if" => $"if {SafeParam(node, 0, "x")} {SafeParam(node, 1, "==")} {SafeParam(node, 2, "0")}",
                 "while" => $"while {SafeParam(node, 0, "x")} {SafeParam(node, 1, "==")} {SafeParam(node, 2, "0")}",
                 _ => node.Keyword
             };
-
             sb.AppendLine(pad + line);
-
             foreach (var child in node.Children)
                 AppendCode(sb, child, indent + 1);
         }
@@ -301,16 +257,13 @@ namespace GoyokVersenyFeladat
                 ? node.Params[idx]
                 : fallback;
 
-        // ════════════════════════════════════════════
-        // HELPER FACTORY-K
-        // ════════════════════════════════════════════
         TextBox MakeTextBox(string text, double width) => new()
         {
             Text = text,
             Width = width,
-            Background = new SolidColorBrush(Color.FromRgb(0x2A, 0x2D, 0x3A)),
+            Background = ClrInput,
             Foreground = Brushes.White,
-            BorderBrush = new SolidColorBrush(Color.FromRgb(0x4A, 0x50, 0x70)),
+            BorderBrush = ClrInputBorder,
             BorderThickness = new Thickness(1),
             FontFamily = new FontFamily("Consolas"),
             FontSize = 11,
@@ -322,7 +275,7 @@ namespace GoyokVersenyFeladat
         TextBlock MakeLabel(string text) => new()
         {
             Text = text,
-            Foreground = new SolidColorBrush(Color.FromRgb(0xAA, 0xAA, 0xCC)),
+            Foreground = ClrLabel,
             FontFamily = new FontFamily("Consolas"),
             FontSize = 11,
             VerticalAlignment = VerticalAlignment.Center,
@@ -334,34 +287,29 @@ namespace GoyokVersenyFeladat
             var cb = new ComboBox
             {
                 Width = width,
-                Background = new SolidColorBrush(Color.FromRgb(0x2A, 0x2D, 0x3A)),
+                Background = ClrInput,
                 Foreground = Brushes.Black,
-                BorderBrush = new SolidColorBrush(Color.FromRgb(0x4A, 0x50, 0x70)),
+                BorderBrush = ClrInputBorder,
                 BorderThickness = new Thickness(1),
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 11,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(0, 0, 4, 0)
             };
-            cb.Resources.Add(SystemColors.WindowBrushKey,
-                new SolidColorBrush(Color.FromRgb(0x2A, 0x2D, 0x3A)));
+
+            cb.Resources.Add(SystemColors.WindowBrushKey, ClrInput);
             cb.Resources.Add(SystemColors.WindowTextBrushKey, Brushes.Black);
-            cb.Resources.Add(SystemColors.HighlightBrushKey,
-                new SolidColorBrush(Color.FromRgb(0x4A, 0x50, 0x70)));
+            cb.Resources.Add(SystemColors.HighlightBrushKey, ClrInputBorder);
             cb.Resources.Add(SystemColors.HighlightTextBrushKey, Brushes.White);
 
             var itemStyle = new Style(typeof(ComboBoxItem));
             itemStyle.Setters.Add(new Setter(ComboBoxItem.ForegroundProperty, Brushes.Black));
-            itemStyle.Setters.Add(new Setter(ComboBoxItem.BackgroundProperty,
-                new SolidColorBrush(Color.FromRgb(0x2A, 0x2D, 0x3A))));
+            itemStyle.Setters.Add(new Setter(ComboBoxItem.BackgroundProperty, ClrInput));
             cb.ItemContainerStyle = itemStyle;
 
             foreach (var item in items)
-            {
-                var cbi = new ComboBoxItem { Content = item };
-                if (item == selected) cbi.IsSelected = true;
-                cb.Items.Add(cbi);
-            }
+                cb.Items.Add(new ComboBoxItem { Content = item, IsSelected = item == selected });
+
             return cb;
         }
     }
