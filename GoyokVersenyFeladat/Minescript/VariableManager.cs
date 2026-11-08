@@ -11,64 +11,35 @@ namespace GoyokVersenyFeladat.Minescript
     {
         private Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 
+        /// <summary>
+        /// Új futás előtt törli a változókat.
+        /// </summary>
+        public void Clear()
+        {
+            variables.Clear();
+        }
+
+        /// <summary>
+        /// Értékadás. Első értékadásnál létrejön a változó, és a típusa véglegesen rögzül.
+        /// </summary>
+        /// <exception cref="MineScriptException">E_TYPE_MISMATCH, ha a típus eltér a rögzítettől.</exception>
         public void SetVariable(string name, object value)
         {
-            if (!variables.ContainsKey(name))
+            VariableType type = value is bool ? VariableType.Bool : VariableType.Int;
+            if (!variables.TryGetValue(name, out Variable existing))
             {
-                if (value is int)
-                {
-                    if ((int)value >= 0 && (int)value <= 100)
-                    {
-                        variables.Add(name, new Variable(VariableType.Int, value));
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Integer értékének 0 és 100 között kell lennie");
-                    }
-                }
-                else if (value is bool)
-                {
-                    variables.Add(name, new Variable(VariableType.Bool, value));
-                }
-                else
-                {
-                    throw new ArgumentException("Csak int és bool típusú változók engedélyezettek");
-                }
+                variables.Add(name, new Variable(type, value));
+            }
+            else if (existing.Type != type)
+            {
+                throw new MineScriptException("E_TYPE_MISMATCH");
             }
             else
             {
-                Variable letezov = variables[name];
-                if (letezov.Type == VariableType.Int)
-                {
-                    if (value is int)
-                    {
-                        if ((int)value >= 0 && (int)value <= 100)
-                        {
-                            letezov.Value = value;
-                        }
-                        else
-                        {
-                            throw new ArgumentException("Integer értékének 0 és 100 között kell lennie");
-                        }
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Csak int típusú változók engedélyezettek");
-                    }
-                }
-                else if (letezov.Type == VariableType.Bool)
-                {
-                    if (value is bool)
-                    {
-                        letezov.Value = value;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Csak bool típusú változók engedélyezettek");
-                    }
-                }
+                existing.Value = value;
             }
         }
+
 
         /// <summary>
         /// Retrieves a variable by its name.
@@ -78,15 +49,13 @@ namespace GoyokVersenyFeladat.Minescript
         /// <exception cref="KeyNotFoundException">Thrown if a variable with the specified <paramref name="name"/> does not exist.</exception>
         public Variable GetVariable(string name)
         {
-            if (variables.ContainsKey(name))
+            if (variables.TryGetValue(name, out Variable v))
             {
-                return variables[name];
+                return v;
             }
-            else
-            {
-                throw new KeyNotFoundException($"A(z) '{name}' nevű változó nem található");
-            }
+            throw new MineScriptException("E_UNINITIALIZED");
         }
+
 
         /// <summary>
         /// Determines whether a variable with the specified name exists in the collection.

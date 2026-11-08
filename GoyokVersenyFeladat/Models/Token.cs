@@ -13,7 +13,9 @@ namespace GoyokVersenyFeladat.Models
         Condition,   // isThere
         Identifier,  // változónevek (pl. count, i)
         Number,      // egész számok (0-100)
-        Symbol,      // pályaelemek: #, @, .
+        Symbol,      // (már nem használt)
+        Operator,    // + - * = <> < <= > >= and or not
+        Boolean,     // true, false
         Unknown      // ismeretlen / hibás token
     }
 

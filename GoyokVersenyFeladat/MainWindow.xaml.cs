@@ -24,24 +24,6 @@ namespace GoyokVersenyFeladat
         public MainWindow()
         {
             InitializeComponent();
-            string[] scriptLines = new string[]
-            {
-    "set count to 0",
-    "while count < 2",
-    "    step_forward",
-    "    turn_by 90",
-    "    set count to count + 1",
-    "mine_here"
-            };
-
-            Tokenizer tokenizer = new Tokenizer();
-            List<ProgramLine> program = tokenizer.Tokenize(scriptLines);
-
-            VariableManager vm = new VariableManager();
-            IRobotController dummyRobot = new TesztRobot();
-            Interpreter interpreter = new Interpreter(vm, dummyRobot);
-
-            interpreter.Execute(program);
         }
     }
 }

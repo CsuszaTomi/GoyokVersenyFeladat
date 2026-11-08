@@ -59,35 +59,73 @@ namespace GoyokVersenyFeladat.Minescript
             return db;
         }
 
+        /// <summary>
+        /// A nyelv foglalt szavai. Változónév nem lehet ezek egyike, kis- és nagybetű kombinációtól függetlenül
+        /// (a blokkszerkesztő ezzel ellenőrizze a beírt változónevet).
+        /// </summary>
+        public static readonly HashSet<string> ReservedWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "and", "by", "else", "false", "forward", "here", "if", "isThere", "mine",
+            "not", "or", "print", "set", "step", "to", "true", "turn", "while"
+        };
+
+
+        public static bool IsValidIdentifier(string name)
+        {
+            if (string.IsNullOrEmpty(name) || ReservedWords.Contains(name) || !IsAsciiLetter(name[0]))
+            {
+                return false;
+            }
+            return name.All(c => IsAsciiLetter(c) || (c >= '0' && c <= '9'));
+        }
+
+        private static bool IsAsciiLetter(char c)
+        {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
+
         private Token ClassifyToken(string word)
         {
-            // Kulcsszavak
-            if (word == "set" || word == "to" || word == "if" || word == "else" || word == "while")
+            switch (word)
             {
-                return new Token(TokenType.Keyword, word);
+                case "set":
+                case "to":
+                case "if":
+                case "else":
+                case "while":
+                case "step":
+                case "forward":
+                case "turn":
+                case "by":
+                case "mine":
+                case "here":
+                case "print":
+                    return new Token(TokenType.Keyword, word);
+                case "isThere":
+                    return new Token(TokenType.Condition, word);
+                case "+":
+                case "-":
+                case "*":
+                case "=":
+                case "<>":
+                case "<":
+                case "<=":
+                case ">":
+                case ">=":
+                case "and":
+                case "or":
+                case "not":
+                    return new Token(TokenType.Operator, word);
+                case "true":
+                case "false":
+                    return new Token(TokenType.Boolean, word);
             }
-            // Robot parancsok
-            if (word == "step_forward" || word == "turn_by" || word == "mine_here" || word == "print")
-            {
-                return new Token(TokenType.Command, word);
-            }
-            // Feltétel lekérdezés
-            if (word == "isThere")
-            {
-                return new Token(TokenType.Condition, word);
-            }
-            // Pályaelemek / Szimbólumok
-            if (word == "#" || word == "@" || word == ".")
-            {
-                return new Token(TokenType.Symbol, word);
-            }
-            // Számok ellenőrzése
             if (int.TryParse(word, out _))
             {
                 return new Token(TokenType.Number, word);
             }
-            // Ha egyik sem, akkor változónév (Identifier)
             return new Token(TokenType.Identifier, word);
         }
     }
+
 }
